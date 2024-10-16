@@ -14,7 +14,7 @@
 .type nameStr,%gnu_unique_object
     
 /*** STUDENTS: Change the next line to your name!  **/
-nameStr: .asciz "Inigo Montoya"  
+nameStr: .asciz "Ian Moser"  
 
 .align   /* realign so that next mem allocations are on word boundaries */
  
@@ -81,6 +81,68 @@ asmFunc:
     
     /*** STUDENTS: Place your code BELOW this line!!! **************/
 
+    LDR r2, =dividend
+    STR r0, [r2]
+    LDR r2, =divisor
+    STR r1, [r2]
+    /*This quickly places the dividend and divisor into memory*/
+    MOV r3, 0
+    LDR r2, =quotient
+    STR r3, [r2]
+    LDR r2, =mod
+    STR r3, [r2]
+    LDR r2, =we_have_a_problem
+    STR r3, [r2]
+    /*making sure quotient, mod, and we have a problem are at 0*/
+    
+    CMP r0, r3
+    BEQ uhOh
+    CMP r1, r3
+    BEQ uhOh
+    
+    MOV r4, 0
+    /* I will tick r4 up each time I subtract to be my quotient*/
+    
+    CMP r0, r1
+    BLT finalize
+    /* In case the initial number is too small to divide. */
+    
+divLoop:
+    SUBS r0, r1
+    BCC uhOh
+    ADD r4, 1
+    CMP r0, r1
+    BGT divLoop
+    BEQ divLoop
+    BLT finalize
+
+    /* Division by subtraction, and quotient tracking by adding to R4,
+     stopping  along the way to make sure we won't hit an error if we
+     continue to divide.*/
+    
+finalize:
+    LDR r2, =quotient
+    STR r4, [r2]
+    
+    LDR r2, =mod
+    STR r0, [r2]
+    /* Storing relevant math results in their addresses. */
+    
+    LDR r2, =we_have_a_problem
+    STR r3, [r2]
+    MOV r0, r4
+    
+    B done
+    
+    
+uhOh:
+    LDR r2, =we_have_a_problem
+    MOV r5, 1
+    STR r5, [r2]
+    LDR r0, =quotient
+    B done
+    /*ticks the flag for having a problem, and fills r0 with the address for
+     quotient.*/
     
     /*** STUDENTS: Place your code ABOVE this line!!! **************/
 
